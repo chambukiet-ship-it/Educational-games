@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>תרגול פיתגורס 📐</title>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --purple: #7C3AED;
+    --purple-light: #EDE9FE;
+    --purple-dark: #4C1D95;
+    --pink: #EC4899;
+    --teal: #0EA5E9;
+    --green: #10B981;
+    --orange: #F59E0B;
+    --red: #EF4444;
+    --bg: #F5F3FF;
+    --white: #ffffff;
+    --dark: #1E1B4B;
+    --gray: #6B7280;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    font-family: 'Rubik', sans-serif;
+    background: var(--bg);
+    min-height: 100vh;
+    direction: rtl;
+    overflow-x: hidden;
+  }
+
+  /* ── SCREENS ── */
+  .screen { display: none; min-height: 100vh; flex-direction: column; }
+  .screen.active { display: flex; }
+
+  /* ══ WELCOME SCREEN ══ */
+  #screen-welcome {
+    background: linear-gradient(160deg, #4C1D95 0%, #7C3AED 50%, #A855F7 100%);
+    align-items: center;
+    justify-content: center;
+    padding: 32px 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  #screen-welcome::before {
+    content: '';
+    position: absolute;
+    width: 300px; height: 300px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 50%;
+    top: -80px; left: -80px;
+  }
+  #screen-welcome::after {
+    content: '';
+    position: absolute;
+    width: 200px; height: 200px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 50%;
+    bottom: -60px; right: -40px;
+  }
+  .welcome-icon {
+    font-size: 80px;
+    margin-bottom: 20px;
+    animation: bounce 2s infinite;
+    position: relative; z-index:1;
+  }
+  @keyframes bounce {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-12px); }
+  }
+  .welcome-title {
+    font-size: 30px;
+    font-weight: 900;
+    color: white;
+    text-align: center;
+    line-height: 1.2;
+    margin-bottom: 10px;
+    position: relative; z-index:1;
+  }
+  .welcome-subtitle {
+    font-size: 18px;
+    color: rgba(255,255,255,0.8);
+    text-align: center;
+    margin-bottom: 8px;
+    position: relative; z-index:1;
+  }
+  .welcome-badge {
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 20px;
+    padding: 6px 18px;
+    color: white;
+    font-size: 15px;
+    margin-bottom: 40px;
+    position: relative; z-index:1;
+  }
+  .formula-card {
+    background: white;
+    border-radius: 20px;
+    padding: 24px;
+    width: 100%;
+    max-width: 360px;
+    margin-bottom: 36px;
+    position: relative; z-index:1;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+  }
+  .formula-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--gray);
+    text-align: center;
+    margin-bottom: 16px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .formula-main {
+    font-size: 32px;
+    font-weight: 900;
+    text-align: center;
+    color: var(--purple);
+    margin-bottom: 12px;
+    direction: ltr;
+  }
+  .formula-parts {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .formula-part {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--dark);
+  }
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
+
+  /* SVG triangle */
+  .triangle-svg { display: block; margin: 0 auto 8px; }
+
+  .start-btn {
+    background: white;
+    color: var(--purple);
+    font-family: 'Rubik', sans-serif;
+    font-size: 20px;
+    font-weight: 900;
+    padding: 18px 60px;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+    position: relative; z-index:1;
+    transition: transform 0.1s, box-shadow 0.1s;
+    width: 100%;
+    max-width: 300px;
+  }
+  .start-btn:active { transform: scale(0.97); box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+
+  /* ══ QUIZ SCREEN ══ */
+  #screen-quiz {
+    background: var(--bg);
+    padding: 0;
+  }
+
+  .quiz-header {
+    background: linear-gradient(135deg, var(--purple-dark), var(--purple));
+    padding: 16px 20px 20px;
+    color: white;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .quiz-header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+  .q-counter {
+    font-size: 16px;
+    font-weight: 700;
+    opacity: 0.9;
+  }
+  .score-pill {
+    background: rgba(255,255,255,0.2);
+    border-radius: 20px;
+    padding: 4px 14px;
+    font-size: 15px;
+    font-weight: 700;
+  }
+  .progress-bar-wrap {
+    background: rgba(255,255,255,0.2);
+    border-radius: 10px;
+    height: 10px;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--pink), #F97316);
+    border-radius: 10px;
+    transition: width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .quiz-body {
+    padding: 24px 20px;
+    flex: 1;
+  }
+
+  .visual-card {
+    background: white;
+    border-radius: 20px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 20px rgba(124,58,237,0.1);
+    text-align: center;
+  }
+  .visual-card svg { max-width: 100%; }
+
+  .question-card {
+    background: white;
+    border-radius: 20px;
+    padding: 22px 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 20px rgba(124,58,237,0.1);
+  }
+  .q-num-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    font-size: 16px;
+    font-weight: 900;
+    color: white;
+    margin-bottom: 14px;
+  }
+  .q-text {
+    font-size: 19px;
+    font-weight: 700;
+    color: var(--dark);
+    line-height: 1.5;
+    direction: rtl;
+  }
+  .q-sub {
+    font-size: 15px;
+    color: var(--gray);
+    margin-top: 8px;
+    line-height: 1.5;
+    direction: rtl;
+  }
+
+  .options-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .option-btn {
+    background: white;
+    border: 2.5px solid #E5E7EB;
+    border-radius: 16px;
+    padding: 16px 20px;
+    font-family: 'Rubik', sans-serif;
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--dark);
+    cursor: pointer;
+    text-align: right;
+    direction: rtl;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    position: relative;
+    overflow: hidden;
+  }
+  .option-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: transparent;
+    transition: background 0.2s;
+  }
+  .option-btn:active { transform: scale(0.98); }
+
+  .option-letter {
+    min-width: 36px; height: 36px;
+    border-radius: 50%;
+    background: var(--purple-light);
+    color: var(--purple);
+    font-weight: 900;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.2s;
+  }
+
+  .option-btn.selected-correct {
+    border-color: var(--green);
+    background: #ECFDF5;
+    animation: correctPop 0.4s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  .option-btn.selected-correct .option-letter {
+    background: var(--green);
+    color: white;
+  }
+  .option-btn.selected-wrong {
+    border-color: var(--red);
+    background: #FEF2F2;
+    animation: shake 0.4s ease;
+  }
+  .option-btn.selected-wrong .option-letter {
+    background: var(--red);
+    color: white;
+  }
+  .option-btn.show-correct {
+    border-color: var(--green);
+    background: #ECFDF5;
+    opacity: 0.7;
+  }
+  .option-btn.show-correct .option-letter {
+    background: var(--green);
+    color: white;
+  }
+  .option-btn.disabled { pointer-events: none; }
+
+  @keyframes correctPop {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.04); }
+    100% { transform: scale(1); }
+  }
+  @keyframes shake {
+    0%,100% { transform: translateX(0); }
+    20% { transform: translateX(-8px); }
+    40% { transform: translateX(8px); }
+    60% { transform: translateX(-5px); }
+    80% { transform: translateX(5px); }
+  }
+
+  .feedback-box {
+    border-radius: 16px;
+    padding: 16px 18px;
+    margin-bottom: 20px;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.5;
+    direction: rtl;
+    display: none;
+    animation: fadeIn 0.3s ease;
+  }
+  .feedback-box.correct {
+    background: #ECFDF5;
+    border: 2px solid var(--green);
+    color: #065F46;
+    display: block;
+  }
+  .feedback-box.wrong {
+    background: #FEF2F2;
+    border: 2px solid var(--red);
+    color: #991B1B;
+    display: block;
+  }
+  @keyframes fadeIn { from { opacity:0; transform: translateY(8px); } to { opacity:1; transform:translateY(0); } }
+
+  .next-btn {
+    width: 100%;
+    background: linear-gradient(135deg, var(--purple), var(--pink));
+    color: white;
+    font-family: 'Rubik', sans-serif;
+    font-size: 19px;
+    font-weight: 800;
+    padding: 18px;
+    border: none;
+    border-radius: 16px;
+    cursor: pointer;
+    display: none;
+    margin-bottom: 24px;
+    box-shadow: 0 6px 24px rgba(124,58,237,0.35);
+    transition: transform 0.1s;
+    letter-spacing: 0.5px;
+  }
+  .next-btn:active { transform: scale(0.98); }
+  .next-btn.visible { display: block; animation: fadeIn 0.3s ease; }
+
+  /* ══ RESULT SCREEN ══ */
+  #screen-result {
+    background: linear-gradient(160deg, #1E1B4B 0%, #4C1D95 60%, #7C3AED 100%);
+    align-items: center;
+    justify-content: center;
+    padding: 32px 24px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .confetti-bg {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+  .confetti-piece {
+    position: absolute;
+    width: 10px; height: 10px;
+    opacity: 0;
+    border-radius: 2px;
+    animation: confettiFall linear infinite;
+  }
+  @keyframes confettiFall {
+    0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+  }
+  .trophy {
+    font-size: 90px;
+    margin-bottom: 16px;
+    animation: trophyBounce 1s cubic-bezier(0.34,1.56,0.64,1);
+    position: relative; z-index:1;
+  }
+  @keyframes trophyBounce {
+    from { transform: scale(0) rotate(-15deg); opacity:0; }
+    to { transform: scale(1) rotate(0deg); opacity:1; }
+  }
+  .result-title {
+    font-size: 28px;
+    font-weight: 900;
+    color: white;
+    margin-bottom: 8px;
+    position: relative; z-index:1;
+  }
+  .score-circle {
+    width: 140px; height: 140px;
+    border-radius: 50%;
+    background: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 20px auto;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    position: relative; z-index:1;
+    animation: scaleIn 0.6s 0.3s cubic-bezier(0.34,1.56,0.64,1) both;
+  }
+  @keyframes scaleIn { from { transform: scale(0); } to { transform: scale(1); } }
+  .score-number {
+    font-size: 48px;
+    font-weight: 900;
+    color: var(--purple);
+    line-height: 1;
+  }
+  .score-label { font-size: 14px; color: var(--gray); font-weight: 600; }
+
+  .result-card {
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 20px;
+    padding: 20px;
+    width: 100%;
+    max-width: 360px;
+    margin-bottom: 20px;
+    position: relative; z-index:1;
+    color: white;
+  }
+  .result-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    font-size: 16px;
+    direction: rtl;
+  }
+  .result-row:last-child { border-bottom: none; }
+  .result-row-label { font-weight: 500; color: rgba(255,255,255,0.7); }
+  .result-row-value { font-weight: 800; }
+
+  .share-section {
+    width: 100%;
+    max-width: 360px;
+    position: relative; z-index:1;
+    margin-bottom: 16px;
+  }
+  .share-label {
+    color: rgba(255,255,255,0.7);
+    font-size: 14px;
+    margin-bottom: 10px;
+    font-weight: 600;
+  }
+  .share-box {
+    background: white;
+    border-radius: 16px;
+    padding: 16px 18px;
+    color: var(--dark);
+    font-size: 15px;
+    line-height: 1.6;
+    text-align: right;
+    direction: rtl;
+    margin-bottom: 12px;
+    font-weight: 500;
+  }
+  .share-btn {
+    width: 100%;
+    background: linear-gradient(135deg, var(--pink), #F97316);
+    color: white;
+    font-family: 'Rubik', sans-serif;
+    font-size: 18px;
+    font-weight: 800;
+    padding: 16px;
+    border: none;
+    border-radius: 14px;
+    cursor: pointer;
+    box-shadow: 0 6px 24px rgba(236,72,153,0.35);
+    transition: transform 0.1s;
+    margin-bottom: 12px;
+  }
+  .share-btn:active { transform: scale(0.97); }
+  .retry-btn {
+    width: 100%;
+    background: rgba(255,255,255,0.15);
+    border: 2px solid rgba(255,255,255,0.3);
+    color: white;
+    font-family: 'Rubik', sans-serif;
+    font-size: 17px;
+    font-weight: 700;
+    padding: 14px;
+    border-radius: 14px;
+    cursor: pointer;
+    position: relative; z-index:1;
+  }
+  .stars-row { font-size: 32px; margin: 8px 0; position: relative; z-index:1; }
+  .grade-text {
+    font-size: 22px;
+    font-weight: 900;
+    color: var(--orange);
+    margin-bottom: 4px;
+    position: relative; z-index:1;
+  }
+</style>
+</head>
+<body>
+
+<!-- ══ WELCOME ══ -->
+<div class="screen active" id="screen-welcome">
+  <div class="welcome-icon">📐</div>
+  <div class="welcome-title">משולש ישר-זווית<br>ומשפט פיתגורס</div>
+  <div class="welcome-subtitle">כיתה ט | מתמטיקה</div>
+  <div class="welcome-badge">10 שאלות · רב-ברירה</div>
+
+  <div class="formula-card">
+    <div class="formula-title">הנוסחה שחייבים לזכור</div>
+    <svg class="triangle-svg" width="180" height="140" viewBox="0 0 180 140">
+      <!-- filled triangle -->
+      <polygon points="20,120 160,120 20,20" fill="#EDE9FE" stroke="none"/>
+      <!-- sides -->
+      <line x1="20" y1="120" x2="160" y2="120" stroke="#0EA5E9" stroke-width="3" stroke-linecap="round"/>
+      <line x1="20" y1="120" x2="20" y2="20" stroke="#F59E0B" stroke-width="3" stroke-linecap="round"/>
+      <line x1="160" y1="120" x2="20" y2="20" stroke="#EC4899" stroke-width="3" stroke-linecap="round"/>
+      <!-- right angle mark -->
+      <polyline points="20,105 35,105 35,120" fill="none" stroke="#1E1B4B" stroke-width="2"/>
+      <!-- labels -->
+      <text x="90" y="137" text-anchor="middle" font-family="Rubik" font-size="14" font-weight="700" fill="#0EA5E9">a</text>
+      <text x="8" y="72" text-anchor="middle" font-family="Rubik" font-size="14" font-weight="700" fill="#F59E0B">b</text>
+      <text x="105" y="68" text-anchor="middle" font-family="Rubik" font-size="14" font-weight="700" fill="#EC4899">c (יתר)</text>
+    </svg>
+    <div class="formula-main">a² + b² = c²</div>
+    <div class="formula-parts">
+      <span class="formula-part"><span class="dot" style="background:#0EA5E9"></span>a, b = ניצבים</span>
+      <span class="formula-part"><span class="dot" style="background:#EC4899"></span>c = יתר</span>
+    </div>
+  </div>
+
+  <button class="start-btn" onclick="startQuiz()">▶ התחל תרגול!</button>
+</div>
+
+<!-- ══ QUIZ ══ -->
+<div class="screen" id="screen-quiz">
+  <div class="quiz-header">
+    <div class="quiz-header-top">
+      <div class="q-counter" id="q-counter">שאלה 1 מתוך 10</div>
+      <div class="score-pill" id="score-display">✅ 0</div>
+    </div>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill" id="progress-bar" style="width:0%"></div>
+    </div>
+  </div>
+
+  <div class="quiz-body">
+    <div class="visual-card" id="visual-card"></div>
+    <div class="question-card">
+      <div class="q-num-badge" id="q-num-badge">1</div>
+      <div class="q-text" id="q-text"></div>
+      <div class="q-sub" id="q-sub"></div>
+    </div>
+
+    <div class="options-grid" id="options-grid"></div>
+    <div class="feedback-box" id="feedback-box"></div>
+    <button class="next-btn" id="next-btn" onclick="nextQuestion()">הבא ←</button>
+  </div>
+</div>
+
+<!-- ══ RESULT ══ -->
+<div class="screen" id="screen-result">
+  <div class="confetti-bg" id="confetti-bg"></div>
+  <div class="trophy" id="trophy-icon">🏆</div>
+  <div class="grade-text" id="grade-text"></div>
+  <div class="stars-row" id="stars-row"></div>
+  <div class="result-title">סיימת את התרגול!</div>
+
+  <div class="score-circle">
+    <div class="score-number" id="final-score"></div>
+    <div class="score-label">מתוך 100</div>
+  </div>
+
+  <div class="result-card">
+    <div class="result-row">
+      <span class="result-row-label">תשובות נכונות</span>
+      <span class="result-row-value" id="res-correct" style="color:#10B981"></span>
+    </div>
+    <div class="result-row">
+      <span class="result-row-label">תשובות שגויות</span>
+      <span class="result-row-value" id="res-wrong" style="color:#EF4444"></span>
+    </div>
+    <div class="result-row">
+      <span class="result-row-label">רמה</span>
+      <span class="result-row-value" id="res-level" style="color:#F59E0B"></span>
+    </div>
+  </div>
+
+  <div class="share-section">
+    <div class="share-label">📨 שלחי למורה:</div>
+    <div class="share-box" id="share-text-box"></div>
+    <button class="share-btn" onclick="shareResult()">💬 שלח בווצאפ למורה</button>
+    <button class="share-btn" id="copy-btn" onclick="copyText()" style="background:linear-gradient(135deg,#0EA5E9,#6366F1);margin-bottom:12px">📋 העתק טקסט</button>
+    <button class="retry-btn" onclick="retryQuiz()">🔁 נסי שוב</button>
+  </div>
+</div>
+
+<script>
+const questions = [
+  {
+    text: "במשולש ישר-זווית, הניצבים הם 3 ס\"מ ו-4 ס\"מ. מהו אורך היתר?",
+    sub: "",
+    options: ["א. 5 ס\"מ", "ב. 7 ס\"מ", "ג. 12 ס\"מ", "ד. 25 ס\"מ"],
+    answer: 0,
+    explain: "✅ נכון! 3² + 4² = 9 + 16 = 25, לכן c = √25 = 5 ס\"מ",
+    wrongExplain: "❌ נסי שוב! 3² + 4² = 9 + 16 = 25, לכן c = √25 = 5 ס\"מ",
+    visual: "triangle",
+    va: "3", vb: "4", vc: "?"
+  },
+  {
+    text: "מהי הנוסחה הנכונה למשפט פיתגורס?",
+    sub: "(כאשר a, b ניצבים ו-c יתר)",
+    options: ["א. a × b = c", "ב. a² - b² = c²", "ג. a + b = c", "ד. a² + b² = c²"],
+    answer: 3,
+    explain: "✅ נכון! משפט פיתגורס: a² + b² = c²",
+    wrongExplain: "❌ הנוסחה הנכונה היא: a² + b² = c²",
+    visual: "formula"
+  },
+  {
+    text: "במשולש ישר-זווית, הניצבים הם 5 ס\"מ ו-12 ס\"מ. מהו אורך היתר?",
+    sub: "",
+    options: ["א. 17 ס\"מ", "ב. 13 ס\"מ", "ג. 60 ס\"מ", "ד. 169 ס\"מ"],
+    answer: 1,
+    explain: "✅ נכון! 5² + 12² = 25 + 144 = 169, לכן c = √169 = 13 ס\"מ",
+    wrongExplain: "❌ 5² + 12² = 25 + 144 = 169, לכן c = √169 = 13 ס\"מ",
+    visual: "triangle",
+    va: "5", vb: "12", vc: "?"
+  },
+  {
+    text: "במשולש ישר-זווית, היתר הוא 10 ס\"מ ואחד הניצבים הוא 6 ס\"מ. מהו אורך הניצב השני?",
+    sub: "",
+    options: ["א. 4 ס\"מ", "ב. 16 ס\"מ", "ג. 8 ס\"מ", "ד. 64 ס\"מ"],
+    answer: 2,
+    explain: "✅ נכון! b² = 10² - 6² = 100 - 36 = 64, לכן b = 8 ס\"מ",
+    wrongExplain: "❌ b² = c² - a² = 100 - 36 = 64, לכן b = 8 ס\"מ",
+    visual: "triangle",
+    va: "6", vb: "?", vc: "10"
+  },
+  {
+    text: "האם המשולש שצלעותיו 5, 12, 13 הוא ישר-זווית?",
+    sub: "בדקי את משפט פיתגורס",
+    options: ["א. כן, כי 25 + 144 = 169 ✓", "ב. לא, הסכום שגוי", "ג. לא ניתן לדעת", "ד. כן, כי 5 + 12 > 13"],
+    answer: 0,
+    explain: "✅ נכון! 5² + 12² = 25 + 144 = 169 = 13² ✓ זהו משולש ישר-זווית!",
+    wrongExplain: "❌ 5² + 12² = 25 + 144 = 169 = 13² — כן, זהו משולש ישר-זווית!",
+    visual: "check",
+    va: "5", vb: "12", vc: "13"
+  },
+  {
+    text: "סולם באורך 5 מ' מונח על קיר. תחתית הסולם רחוקה 3 מ' מהקיר. באיזה גובה מגיע הסולם לקיר?",
+    sub: "",
+    options: ["א. 4 מ'", "ב. 2 מ'", "ג. 8 מ'", "ד. 34 מ'"],
+    answer: 0,
+    explain: "✅ נכון! b² = 5² - 3² = 25 - 9 = 16, לכן גובה = 4 מ'",
+    wrongExplain: "❌ b² = 5² - 3² = 16, לכן גובה = 4 מ'",
+    visual: "ladder"
+  },
+  {
+    text: "מהו השם של הצלע הארוכה ביותר במשולש ישר-זווית?",
+    sub: "(הצלע שמול הזווית הישרה)",
+    options: ["א. ניצב", "ב. יתר", "ג. גובה", "ד. תיכון"],
+    answer: 1,
+    explain: "✅ נכון! היתר הוא הצלע מול הזווית הישרה — וזו תמיד הצלע הארוכה ביותר!",
+    wrongExplain: "❌ הצלע הארוכה ביותר נקראת יתר — היא מול הזווית הישרה.",
+    visual: "label-triangle"
+  },
+  {
+    text: "במשולש ישר-זווית, היתר הוא 15 ס\"מ ואחד הניצבים הוא 9 ס\"מ. מהו אורך הניצב השני?",
+    sub: "",
+    options: ["א. 6 ס\"מ", "ב. 144 ס\"מ", "ג. 24 ס\"מ", "ד. 12 ס\"מ"],
+    answer: 3,
+    explain: "✅ נכון! b² = 15² - 9² = 225 - 81 = 144, לכן b = 12 ס\"מ",
+    wrongExplain: "❌ b² = 225 - 81 = 144, לכן b = √144 = 12 ס\"מ",
+    visual: "triangle",
+    va: "9", vb: "?", vc: "15"
+  },
+  {
+    text: "ריבועים בנויים על כל צלע. אם שטחי הריבועים על הניצבים הם 9 ו-16 — מהו שטח הריבוע על היתר?",
+    sub: "",
+    options: ["א. 7", "ב. 25", "ג. 144", "ד. 12"],
+    answer: 1,
+    explain: "✅ נכון! שטח הריבוע על היתר = 9 + 16 = 25",
+    wrongExplain: "❌ לפי פיתגורס: שטח על היתר = 9 + 16 = 25",
+    visual: "squares"
+  },
+  {
+    text: "האם משולש שצלעותיו 6, 8, 10 הוא ישר-זווית?",
+    sub: "בדקי: 6² + 8² = ? ומה זה 10²",
+    options: ["א. כן, כי 36 + 64 = 100 ✓", "ב. לא, כי 6 + 8 ≠ 10", "ג. כן, כי 6 + 8 > 10", "ד. לא ניתן לדעת"],
+    answer: 0,
+    explain: "✅ נכון! 6² + 8² = 36 + 64 = 100 = 10² ✓ זהו משולש ישר-זווית (הכפלה של 3-4-5)!",
+    wrongExplain: "❌ 6² + 8² = 36 + 64 = 100 = 10² — כן, זהו משולש ישר-זווית!",
+    visual: "check",
+    va: "6", vb: "8", vc: "10"
+  }
+];
+
+const colors = ["#7C3AED","#EC4899","#10B981","#F59E0B","#0EA5E9","#7C3AED","#EC4899","#10B981","#F59E0B","#0EA5E9"];
+
+let current = 0, score = 0, answered = false;
+
+function buildVisual(q) {
+  const card = document.getElementById("visual-card");
+  const type = q.visual;
+
+  if (type === "triangle") {
+    // Draw proportional triangle based on actual leg values
+    // Parse numeric values (strip non-numeric for scaling)
+    const rawA = parseFloat(q.va) || 3;
+    const rawB = parseFloat(q.vb) || 4;
+    // scale so max leg = 110px, min = 55px
+    const maxRaw = Math.max(rawA, rawB);
+    const scale = 110 / maxRaw;
+    const legA = Math.max(rawA * scale, 55); // horizontal leg (bottom)
+    const legB = Math.max(rawB * scale, 55); // vertical leg (left)
+    const ox = 25, oy = 20;
+    const bx = ox + legA, by = oy + legB; // bottom-right corner (right angle)
+    // Points: right-angle at bottom-left (ox, by), goes right to (bx,by), goes up to (ox,oy)
+    const svgW = bx + 30, svgH = by + 25;
+    const midAx = (ox + bx) / 2, midAy = by + 17; // label for leg a (bottom)
+    const midBx = ox - 14,       midBy = (oy + by) / 2; // label for leg b (left side)
+    // hypotenuse midpoint
+    const midHx = (bx + ox) / 2 + 14, midHy = (oy + by) / 2 - 5;
+    card.innerHTML = `
+      <svg width="${svgW}" height="${svgH}" viewBox="0 0 ${svgW} ${svgH}" style="max-width:100%">
+        <polygon points="${ox},${by} ${bx},${by} ${ox},${oy}" fill="#EDE9FE"/>
+        <line x1="${ox}" y1="${by}" x2="${bx}" y2="${by}" stroke="#0EA5E9" stroke-width="3" stroke-linecap="round"/>
+        <line x1="${ox}" y1="${by}" x2="${ox}" y2="${oy}" stroke="#F59E0B" stroke-width="3" stroke-linecap="round"/>
+        <line x1="${bx}" y1="${by}" x2="${ox}" y2="${oy}" stroke="#EC4899" stroke-width="3" stroke-linecap="round"/>
+        <polyline points="${ox},${by-14} ${ox+14},${by-14} ${ox+14},${by}" fill="none" stroke="#1E1B4B" stroke-width="2"/>
+        <text x="${midAx}" y="${midAy}" text-anchor="middle" font-family="Rubik" font-size="15" font-weight="700" fill="#0EA5E9">${q.va||'a'}</text>
+        <text x="${midBx}" y="${midBy+5}" text-anchor="middle" font-family="Rubik" font-size="15" font-weight="700" fill="#F59E0B">${q.vb||'b'}</text>
+        <text x="${midHx}" y="${midHy}" text-anchor="start" font-family="Rubik" font-size="15" font-weight="700" fill="#EC4899">${q.vc||'c'}</text>
+      </svg>`;
+  } else if (type === "formula") {
+    card.innerHTML = `
+      <svg width="200" height="130" viewBox="0 0 200 130">
+        <polygon points="20,115 180,115 20,15" fill="#EDE9FE"/>
+        <line x1="20" y1="115" x2="180" y2="115" stroke="#0EA5E9" stroke-width="3" stroke-linecap="round"/>
+        <line x1="20" y1="115" x2="20" y2="15" stroke="#F59E0B" stroke-width="3" stroke-linecap="round"/>
+        <line x1="180" y1="115" x2="20" y2="15" stroke="#EC4899" stroke-width="3" stroke-linecap="round"/>
+        <polyline points="20,100 35,100 35,115" fill="none" stroke="#1E1B4B" stroke-width="2"/>
+        <text x="100" y="129" text-anchor="middle" font-family="Rubik" font-size="14" font-weight="700" fill="#0EA5E9">a</text>
+        <text x="8" y="68" text-anchor="middle" font-family="Rubik" font-size="14" font-weight="700" fill="#F59E0B">b</text>
+        <text x="118" y="58" text-anchor="middle" font-family="Rubik" font-size="14" font-weight="700" fill="#EC4899">c (יתר)</text>
+      </svg>
+      <div style="font-size:14px;color:#6B7280;margin-top:4px">מהי הנוסחה הנכונה?</div>`;
+  } else if (type === "check") {
+    card.innerHTML = `
+      <svg width="200" height="130" viewBox="0 0 200 130">
+        <polygon points="20,115 180,115 20,15" fill="#EDE9FE"/>
+        <line x1="20" y1="115" x2="180" y2="115" stroke="#0EA5E9" stroke-width="3" stroke-linecap="round"/>
+        <line x1="20" y1="115" x2="20" y2="15" stroke="#F59E0B" stroke-width="3" stroke-linecap="round"/>
+        <line x1="180" y1="115" x2="20" y2="15" stroke="#EC4899" stroke-width="3" stroke-linecap="round"/>
+        <text x="100" y="130" text-anchor="middle" font-family="Rubik" font-size="14" font-weight="700" fill="#0EA5E9">${q.va}</text>
+        <text x="7" y="68" text-anchor="middle" font-family="Rubik" font-size="14" font-weight="700" fill="#F59E0B">${q.vb}</text>
+        <text x="115" y="58" text-anchor="middle" font-family="Rubik" font-size="14" font-weight="700" fill="#EC4899">${q.vc}</text>
+        <text x="100" y="75" text-anchor="middle" font-family="Rubik" font-size="13" font-weight="700" fill="#7C3AED">ישר-זווית?</text>
+      </svg>`;
+  } else if (type === "ladder") {
+    card.innerHTML = `
+      <svg width="180" height="150" viewBox="0 0 180 150">
+        <!-- ground -->
+        <line x1="10" y1="135" x2="170" y2="135" stroke="#9CA3AF" stroke-width="3"/>
+        <!-- wall -->
+        <line x1="30" y1="10" x2="30" y2="135" stroke="#6B7280" stroke-width="8" stroke-linecap="round"/>
+        <!-- ladder -->
+        <line x1="110" y1="135" x2="30" y2="35" stroke="#7C3AED" stroke-width="4" stroke-linecap="round"/>
+        <!-- right angle -->
+        <polyline points="30,120 45,120 45,135" fill="none" stroke="#1E1B4B" stroke-width="2"/>
+        <!-- labels -->
+        <text x="72" y="152" text-anchor="middle" font-family="Rubik" font-size="13" font-weight="700" fill="#0EA5E9">3 מ'</text>
+        <text x="78" y="80" text-anchor="middle" font-family="Rubik" font-size="13" font-weight="700" fill="#7C3AED">5 מ'</text>
+        <text x="16" y="90" text-anchor="middle" font-family="Rubik" font-size="13" font-weight="700" fill="#F59E0B">?</text>
+      </svg>`;
+  } else if (type === "label-triangle") {
+    card.innerHTML = `
+      <svg width="200" height="140" viewBox="0 0 200 140">
+        <polygon points="20,125 180,125 20,15" fill="#EDE9FE"/>
+        <line x1="20" y1="125" x2="180" y2="125" stroke="#0EA5E9" stroke-width="3"/>
+        <line x1="20" y1="125" x2="20" y2="15" stroke="#F59E0B" stroke-width="3"/>
+        <line x1="180" y1="125" x2="20" y2="15" stroke="#EC4899" stroke-width="3"/>
+        <polyline points="20,110 35,110 35,125" fill="none" stroke="#1E1B4B" stroke-width="2"/>
+        <text x="100" y="140" text-anchor="middle" font-family="Rubik" font-size="13" font-weight="700" fill="#0EA5E9">ניצב</text>
+        <text x="7" y="73" text-anchor="middle" font-family="Rubik" font-size="13" font-weight="700" fill="#F59E0B">ניצב</text>
+        <text x="130" y="62" text-anchor="middle" font-family="Rubik" font-size="13" font-weight="700" fill="#EC4899">???</text>
+      </svg>`;
+  } else if (type === "squares") {
+    card.innerHTML = `
+      <svg width="200" height="150" viewBox="0 0 200 150">
+        <!-- triangle -->
+        <polygon points="80,120 150,120 80,50" fill="#EDE9FE"/>
+        <line x1="80" y1="120" x2="150" y2="120" stroke="#0EA5E9" stroke-width="2.5"/>
+        <line x1="80" y1="120" x2="80" y2="50" stroke="#F59E0B" stroke-width="2.5"/>
+        <line x1="150" y1="120" x2="80" y2="50" stroke="#EC4899" stroke-width="2.5"/>
+        <polyline points="80,107 93,107 93,120" fill="none" stroke="#1E1B4B" stroke-width="2"/>
+        <!-- square on bottom leg a -->
+        <rect x="80" y="120" width="70" height="25" fill="rgba(14,165,233,0.15)" stroke="#0EA5E9" stroke-width="1.5"/>
+        <text x="115" y="137" text-anchor="middle" font-family="Rubik" font-size="12" font-weight="700" fill="#0EA5E9">9</text>
+        <!-- square on left leg b -->
+        <rect x="45" y="50" width="35" height="70" fill="rgba(245,158,11,0.15)" stroke="#F59E0B" stroke-width="1.5"/>
+        <text x="62" y="90" text-anchor="middle" font-family="Rubik" font-size="12" font-weight="700" fill="#F59E0B">16</text>
+        <!-- square on hyp -->
+        <text x="152" y="85" font-family="Rubik" font-size="13" font-weight="700" fill="#EC4899">= ?</text>
+      </svg>`;
+  } else {
+    card.innerHTML = `<div style="font-size:48px">📐</div>`;
+  }
+}
+
+function startQuiz() {
+  document.getElementById("screen-welcome").classList.remove("active");
+  document.getElementById("screen-quiz").classList.add("active");
+  current = 0; score = 0;
+  loadQuestion();
+}
+
+function loadQuestion() {
+  answered = false;
+  const q = questions[current];
+  const col = colors[current];
+
+  // header
+  document.getElementById("q-counter").textContent = `שאלה ${current+1} מתוך ${questions.length}`;
+  document.getElementById("score-display").textContent = `✅ ${score}`;
+  document.getElementById("progress-bar").style.width = `${(current / questions.length) * 100}%`;
+
+  // badge
+  const badge = document.getElementById("q-num-badge");
+  badge.textContent = current + 1;
+  badge.style.background = col;
+
+  // visual
+  buildVisual(q);
+
+  // question
+  document.getElementById("q-text").textContent = q.text;
+  document.getElementById("q-sub").textContent = q.sub || "";
+
+  // options
+  const grid = document.getElementById("options-grid");
+  grid.innerHTML = "";
+  const letters = ["א", "ב", "ג", "ד"];
+  q.options.forEach((opt, i) => {
+    const btn = document.createElement("button");
+    btn.className = "option-btn";
+    btn.innerHTML = `<span class="option-letter">${letters[i]}</span>${opt.substring(3)}`;
+    btn.onclick = () => selectAnswer(i, q, col);
+    grid.appendChild(btn);
+  });
+
+  // reset
+  const fb = document.getElementById("feedback-box");
+  fb.className = "feedback-box";
+  fb.textContent = "";
+  const nb = document.getElementById("next-btn");
+  nb.classList.remove("visible");
+  nb.textContent = current === questions.length - 1 ? "📊 ראי את התוצאות!" : "הבא ←";
+}
+
+function selectAnswer(idx, q, col) {
+  if (answered) return;
+  answered = true;
+
+  const btns = document.querySelectorAll(".option-btn");
+  const fb = document.getElementById("feedback-box");
+  const correct = q.answer;
+
+  btns.forEach((btn, i) => {
+    btn.classList.add("disabled");
+    if (i === correct && i !== idx) btn.classList.add("show-correct");
+  });
+
+  if (idx === correct) {
+    btns[idx].classList.add("selected-correct");
+    fb.className = "feedback-box correct";
+    fb.textContent = q.explain;
+    score++;
+  } else {
+    btns[idx].classList.add("selected-wrong");
+    fb.className = "feedback-box wrong";
+    fb.textContent = q.wrongExplain;
+  }
+
+  document.getElementById("score-display").textContent = `✅ ${score}`;
+  document.getElementById("next-btn").classList.add("visible");
+}
+
+function nextQuestion() {
+  current++;
+  if (current >= questions.length) {
+    showResult();
+  } else {
+    loadQuestion();
+    window.scrollTo(0,0);
+  }
+}
+
+function showResult() {
+  document.getElementById("screen-quiz").classList.remove("active");
+  document.getElementById("screen-result").classList.add("active");
+
+  const pct = Math.round((score / questions.length) * 100);
+  const wrong = questions.length - score;
+
+  document.getElementById("final-score").textContent = pct;
+  document.getElementById("res-correct").textContent = `${score} ✅`;
+  document.getElementById("res-wrong").textContent = `${wrong} ❌`;
+
+  let grade, stars, trophy, level;
+  if (pct === 100)    { grade="מושלם! 🌟"; stars="⭐⭐⭐⭐⭐"; trophy="🏆"; level="מצטיינת"; }
+  else if (pct >= 90) { grade="מעולה! 🎉"; stars="⭐⭐⭐⭐⭐"; trophy="🏆"; level="מצטיינת"; }
+  else if (pct >= 70) { grade="כל הכבוד! 👏"; stars="⭐⭐⭐⭐"; trophy="🥇"; level="טובה מאוד"; }
+  else if (pct >= 50) { grade="טוב, המשיכי! 💪"; stars="⭐⭐⭐"; trophy="🥈"; level="בינונית"; }
+  else               { grade="יש להתאמן עוד 📚"; stars="⭐⭐"; trophy="🎯"; level="צריכה חיזוק"; }
+
+  document.getElementById("grade-text").textContent = grade;
+  document.getElementById("stars-row").textContent = stars;
+  document.getElementById("trophy-icon").textContent = trophy;
+  document.getElementById("res-level").textContent = level;
+
+  const now = new Date();
+  const dateStr = now.toLocaleDateString("he-IL");
+  const shareText = `📐 תוצאות תרגול פיתגורס\n👩‍🎓 תאריך: ${dateStr}\n✅ תשובות נכונות: ${score}/10\n📊 ציון: ${pct}\n⭐ רמה: ${level}\n${grade}`;
+  document.getElementById("share-text-box").textContent = shareText;
+
+  if (pct >= 70) spawnConfetti();
+}
+
+function spawnConfetti() {
+  const container = document.getElementById("confetti-bg");
+  const confettiColors = ["#7C3AED","#EC4899","#10B981","#F59E0B","#0EA5E9","#EF4444","#F97316"];
+  for (let i = 0; i < 40; i++) {
+    const piece = document.createElement("div");
+    piece.className = "confetti-piece";
+    piece.style.cssText = `
+      left: ${Math.random()*100}%;
+      background: ${confettiColors[Math.floor(Math.random()*confettiColors.length)]};
+      width: ${6+Math.random()*8}px;
+      height: ${6+Math.random()*8}px;
+      border-radius: ${Math.random()>0.5 ? '50%' : '2px'};
+      animation-duration: ${2+Math.random()*3}s;
+      animation-delay: ${Math.random()*2}s;
+    `;
+    container.appendChild(piece);
+  }
+}
+
+function shareResult() {
+  const text = document.getElementById("share-text-box").textContent;
+  // Try native share (mobile)
+  if (navigator.share) {
+    navigator.share({ title: "תוצאות תרגול פיתגורס", text: text }).catch(() => openWhatsApp(text));
+  } else {
+    openWhatsApp(text);
+  }
+}
+
+function openWhatsApp(text) {
+  const encoded = encodeURIComponent(text);
+  // Opens WhatsApp with pre-filled message (works on mobile and desktop)
+  const waUrl = `https://wa.me/?text=${encoded}`;
+  window.open(waUrl, '_blank');
+}
+
+function copyText() {
+  const text = document.getElementById("share-text-box").textContent;
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = document.getElementById("copy-btn");
+      btn.textContent = "✅ הועתק!";
+      setTimeout(() => { btn.textContent = "📋 העתק טקסט"; }, 2000);
+    }).catch(() => fallbackCopy(text));
+  } else {
+    fallbackCopy(text);
+  }
+}
+
+function fallbackCopy(text) {
+  const ta = document.createElement("textarea");
+  ta.value = text;
+  ta.style.position = "fixed";
+  ta.style.opacity = "0";
+  document.body.appendChild(ta);
+  ta.focus();
+  ta.select();
+  document.execCommand("copy");
+  document.body.removeChild(ta);
+  const btn = document.getElementById("copy-btn");
+  btn.textContent = "✅ הועתק!";
+  setTimeout(() => { btn.textContent = "📋 העתק טקסט"; }, 2000);
+}
+
+function retryQuiz() {
+  document.getElementById("screen-result").classList.remove("active");
+  document.getElementById("confetti-bg").innerHTML = "";
+  startQuiz();
+}
+</script>
+</body>
+</html>
